@@ -42,16 +42,10 @@
         button:hover {
             background-color: #45a049;
         }
-        #result {
+        #result, #parsedData {
             margin-top: 20px;
-            background-color: #f9f9f9;
-            padding: 10px;
-            border: 1px solid #ddd;
-        }
-        #weatherDetails {
-            margin-top: 20px;
-            padding: 10px;
             background-color: #eef;
+            padding: 10px;
             border: 1px solid #ccc;
         }
     </style>
@@ -61,6 +55,7 @@
         <h1>Wind & Flight Tracker</h1>
     </header>
     <main>
+        <!-- Flight Details Form -->
         <h2>Enter Your Flight Details</h2>
         <form id="flightForm">
             <!-- Site Selection -->
@@ -93,21 +88,27 @@
             </select><br>
 
             <!-- Submit Button -->
-            <button type="submit">Submit</button>
+            <button type="submit">Submit Flight Details</button>
         </form>
 
-        <!-- Result Display -->
-        <p id="result"></p>
+        <!-- Display submitted flight details -->
+        <div id="result"></div>
 
-        <!-- Weather Data Display -->
-        <div id="weatherDetails"></div>
+        <!-- Weather Data Upload Section -->
+        <h2>Upload Weather Data (XLSX)</h2>
+        <input type="file" id="uploadXLSX" accept=".xlsx" />
+        <div id="parsedData"></div>
     </main>
     <footer>
         <p>© 2024 Wind & Flight Tracker</p>
     </footer>
 
-    <!-- JavaScript to handle form submission and weather scraping -->
+    <!-- Include the SheetJS library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
+
+    <!-- JavaScript to handle form submission, file upload, and XLSX parsing -->
     <script>
+        // Handle flight details form submission
         document.getElementById('flightForm').addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent form from refreshing the page
 
@@ -126,33 +127,42 @@
                 Wind Speed: ${windSpeed} <br>
                 Wind Direction: ${windDirection}`;
             document.getElementById('result').innerHTML = result;
+        });
 
-            // Scrape weather data from Ecowitt (may be blocked by CORS)
-            fetch('https://www.ecowitt.net/home/share?authorize=GVRMUU&device_id=SDlnSTAyczI0YndJWG13dllPYVBPZz09')
-                .then(response => response.text())
-                .then(html => {
-                    // Create a DOM parser to convert the HTML into a document
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
+        // Handle file upload and XLSX parsing
+        document.getElementById('uploadXLSX').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
 
-                    // Extract weather data by element class or ID
-                    const windSpeedElement = doc.querySelector('.wind-speed-class'); // Update to the actual class or ID
-                    const windDirectionElement = doc.querySelector('.wind-direction-class'); // Update to the actual class or ID
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
 
-                    // Ensure elements were found and then extract the text content
-                    const windSpeed = windSpeedElement ? windSpeedElement.textContent : 'Not found';
-                    const windDirection = windDirectionElement ? windDirectionElement.textContent : 'Not found';
+                // Assume the data is in the first sheet
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
 
-                    // Display the scraped data
-                    document.getElementById('weatherDetails').innerHTML = `
-                        <strong>Scraped Weather Data:</strong><br>
-                        Wind Speed: ${windSpeed} <br> 
-                        Wind Direction: ${windDirection}`;
-                })
-                .catch(error => {
-                    console.error('Error scraping weather data:', error);
-                    document.getElementById('weatherDetails').innerHTML = 'Error scraping weather data. Check CORS or inspect the page.';
-                });
+                // Parse the worksheet data into a JSON array
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+                // Display the raw data (for debugging)
+                console.log(jsonData);
+                
+                // Extract wind speed and direction from the parsed data
+                // Assuming wind speed is in column 3 and wind direction in column 4 (adjust based on your file structure)
+                const windSpeed = jsonData[1][2]; // Row 2, Column 3
+                const windDirection = jsonData[1][3]; // Row 2, Column 4
+
+                // Display the parsed wind speed and direction
+                document.getElementById('parsedData').innerHTML = `
+                    <strong>Parsed Weather Data:</strong><br>
+                    Wind Speed: ${windSpeed} <br>
+                    Wind Direction: ${windDirection}
+                `;
+            };
+
+            // Read the file as an ArrayBuffer
+            reader.readAsArrayBuffer(file);
         });
     </script>
 </body>
