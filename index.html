@@ -31,4 +31,17 @@
     </header>
     <main>
         <h2>Welcome</h2>
+        <h2>Enter Your Flight Details</h2>
+<form id="flightForm">
+    <label for="launch">Launch Time:</label><br>
+    <input type="datetime-local" id="launch" name="launch" required><br><br>
+
+    <label for="landing">Landing Time:</label><br>
+    <input type="datetime-local" id="landing" name="landing" required><br><br>
+
+    <button type="submit">Submit</button>
+</form>
+
+<p id="result"></p>
+
         <p>
