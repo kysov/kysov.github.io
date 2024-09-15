@@ -48,6 +48,12 @@
             padding: 10px;
             border: 1px solid #ddd;
         }
+        #weatherDetails {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #eef;
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
 <body>
@@ -77,7 +83,6 @@
                 <option value="moderate">Moderate</option>
                 <option value="strong">Strong</option>
                 <option value="gusty">Gusty</option>
-                <option value="perfect">Perfect</option>
             </select><br>
 
             <!-- Wind Direction Dropdown -->
@@ -93,12 +98,15 @@
 
         <!-- Result Display -->
         <p id="result"></p>
+
+        <!-- Weather Data Display -->
+        <div id="weatherDetails"></div>
     </main>
     <footer>
-        <p>personal pet project to find correlations between flights and live wind data</p>
+        <p>© 2024 Wind & Flight Tracker</p>
     </footer>
 
-    <!-- JavaScript to handle form submission and display results -->
+    <!-- JavaScript to handle form submission and weather scraping -->
     <script>
         document.getElementById('flightForm').addEventListener('submit', function(event) {
             event.preventDefault(); // Prevent form from refreshing the page
@@ -110,7 +118,7 @@
             const windSpeed = document.getElementById('windSpeed').value;
             const windDirection = document.getElementById('windDirection').value;
 
-            // Display the entered values (for now, just showing in the result area)
+            // Display the entered values
             const result = `
                 Site: ${site} <br> 
                 Launch Time: ${launchTime} <br> 
@@ -119,7 +127,32 @@
                 Wind Direction: ${windDirection}`;
             document.getElementById('result').innerHTML = result;
 
-            // Next step: We will use these values to generate a weather report
+            // Scrape weather data from Ecowitt (may be blocked by CORS)
+            fetch('https://www.ecowitt.net/home/share?authorize=GVRMUU&device_id=SDlnSTAyczI0YndJWG13dllPYVBPZz09')
+                .then(response => response.text())
+                .then(html => {
+                    // Create a DOM parser to convert the HTML into a document
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+
+                    // Extract weather data by element class or ID
+                    const windSpeedElement = doc.querySelector('.wind-speed-class'); // Update to the actual class or ID
+                    const windDirectionElement = doc.querySelector('.wind-direction-class'); // Update to the actual class or ID
+
+                    // Ensure elements were found and then extract the text content
+                    const windSpeed = windSpeedElement ? windSpeedElement.textContent : 'Not found';
+                    const windDirection = windDirectionElement ? windDirectionElement.textContent : 'Not found';
+
+                    // Display the scraped data
+                    document.getElementById('weatherDetails').innerHTML = `
+                        <strong>Scraped Weather Data:</strong><br>
+                        Wind Speed: ${windSpeed} <br> 
+                        Wind Direction: ${windDirection}`;
+                })
+                .catch(error => {
+                    console.error('Error scraping weather data:', error);
+                    document.getElementById('weatherDetails').innerHTML = 'Error scraping weather data. Check CORS or inspect the page.';
+                });
         });
     </script>
 </body>
