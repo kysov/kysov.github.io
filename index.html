@@ -23,6 +23,31 @@
             text-align: center;
             color: #777;
         }
+        label {
+            font-weight: bold;
+        }
+        select, input {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
     </style>
 </head>
 <body>
@@ -30,36 +55,71 @@
         <h1>Wind & Flight Tracker</h1>
     </header>
     <main>
-        <h2>Welcome</h2>
         <h2>Enter Your Flight Details</h2>
-<form id="flightForm">
-    <label for="launch">Launch Time:</label><br>
-    <input type="datetime-local" id="launch" name="launch" required><br><br>
+        <form id="flightForm">
+            <!-- Site Selection -->
+            <label for="site">Choose Site:</label>
+            <select id="site" name="site">
+                <option value="Lower Williams">Lower Williams</option>
+            </select><br>
 
-    <label for="landing">Landing Time:</label><br>
-    <input type="datetime-local" id="landing" name="landing" required><br><br>
+            <!-- Flight Time Inputs -->
+            <label for="launch">Launch Time:</label>
+            <input type="datetime-local" id="launch" name="launch" required><br>
 
-    <button type="submit">Submit</button>
-</form>
+            <label for="landing">Landing Time:</label>
+            <input type="datetime-local" id="landing" name="landing" required><br>
 
-<p id="result"></p>
+            <!-- Wind Speed Dropdown -->
+            <label for="windSpeed">Wind Speed:</label>
+            <select id="windSpeed" name="windSpeed">
+                <option value="light">Light</option>
+                <option value="moderate">Moderate</option>
+                <option value="strong">Strong</option>
+                <option value="gusty">Gusty</option>
+            </select><br>
 
+            <!-- Wind Direction Dropdown -->
+            <label for="windDirection">Wind Direction:</label>
+            <select id="windDirection" name="windDirection">
+                <option value="straightIn">Straight In</option>
+                <option value="cross">Cross</option>
+            </select><br>
 
-        <script>
-document.getElementById('flightForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent form from refreshing the page
+            <!-- Submit Button -->
+            <button type="submit">Submit</button>
+        </form>
 
-    // Capture the input values
-    const launchTime = document.getElementById('launch').value;
-    const landingTime = document.getElementById('landing').value;
+        <!-- Result Display -->
+        <p id="result"></p>
+    </main>
+    <footer>
+        <p>© 2024 Wind & Flight Tracker</p>
+    </footer>
 
-    // Display the entered times (for now, just showing in the result area)
-    const result = `Launch Time: ${launchTime} <br> Landing Time: ${landingTime}`;
-    document.getElementById('result').innerHTML = result;
+    <!-- JavaScript to handle form submission and display results -->
+    <script>
+        document.getElementById('flightForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form from refreshing the page
 
-    // Next step: We will use these times to generate a weather report
-});
-</script>
+            // Capture the input values
+            const site = document.getElementById('site').value;
+            const launchTime = document.getElementById('launch').value;
+            const landingTime = document.getElementById('landing').value;
+            const windSpeed = document.getElementById('windSpeed').value;
+            const windDirection = document.getElementById('windDirection').value;
 
-        
-        <p>
+            // Display the entered values (for now, just showing in the result area)
+            const result = `
+                Site: ${site} <br> 
+                Launch Time: ${launchTime} <br> 
+                Landing Time: ${landingTime} <br>
+                Wind Speed: ${windSpeed} <br>
+                Wind Direction: ${windDirection}`;
+            document.getElementById('result').innerHTML = result;
+
+            // Next step: We will use these values to generate a weather report
+        });
+    </script>
+</body>
+</html>
