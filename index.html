@@ -44,4 +44,22 @@
 
 <p id="result"></p>
 
+
+        <script>
+document.getElementById('flightForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent form from refreshing the page
+
+    // Capture the input values
+    const launchTime = document.getElementById('launch').value;
+    const landingTime = document.getElementById('landing').value;
+
+    // Display the entered times (for now, just showing in the result area)
+    const result = `Launch Time: ${launchTime} <br> Landing Time: ${landingTime}`;
+    document.getElementById('result').innerHTML = result;
+
+    // Next step: We will use these times to generate a weather report
+});
+</script>
+
+        
         <p>
