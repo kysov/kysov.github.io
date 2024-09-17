@@ -13,6 +13,33 @@ header {
     font-size: 24px;
 }
 
+/* Style for the navbar */
+.navbar {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: #4CAF50;
+    overflow: hidden;
+    text-align: center;
+}
+
+.navbar li {
+    display: inline-block;
+}
+
+.navbar li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.navbar li a:hover {
+    background-color: #45a049;
+}
+
 main {
     padding: 50px;
 }
